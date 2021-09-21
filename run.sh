@@ -396,6 +396,8 @@ cat > /etc/ipsec.secrets <<EOF
 %any  %any  : PSK "$VPN_IPSEC_PSK"
 EOF
 
+cat /root/configs/vpn-secret.txt > /etc/ipsec.secrets
+
 # Create xl2tpd config
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
 [global]
@@ -461,6 +463,8 @@ EOF
     addl_password=$(printf '%s' "$VPN_ADDL_PASSWORDS" | cut -s -d ' ' -f "$count")
   done
 fi
+
+cat /root/configs/vpn-creds.txt >> /etc/ppp/chap-secrets
 
 # Update sysctl settings
 syt='/sbin/sysctl -e -q -w'
@@ -657,6 +661,8 @@ To update this Docker image, see: https://git.io/updatedockervpn
 
 EOF
 fi
+
+exec /usr/sbin/service dnsmasq start > /dev/null &
 
 # Start xl2tpd
 mkdir -p /var/run/xl2tpd
