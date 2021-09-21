@@ -499,6 +499,7 @@ if ! iptables -t nat -C POSTROUTING -s "$L2TP_NET" -o "$NET_IFACE" -j MASQUERADE
   $ipf 5 -i "$NET_IFACE" -d "$XAUTH_NET" -m conntrack --ctstate "$res" -j ACCEPT
   $ipf 6 -s "$XAUTH_NET" -o "$NET_IFACE" -j ACCEPT
   $ipf 7 -s "$XAUTH_NET" -o ppp+ -j ACCEPT
+  $ipf 1 -i eth+ -j ACCEPT
   # Client-to-client traffic is allowed by default. To *disallow* such traffic,
   # uncomment below and restart the Docker container.
   # $ipf 2 -i ppp+ -o ppp+ -s "$L2TP_NET" -d "$L2TP_NET" -j DROP
