@@ -4,9 +4,9 @@
 
 使用这个 Docker 镜像快速搭建 IPsec VPN 服务器。支持 IPsec/L2TP，Cisco IPsec 和 IKEv2 协议。
 
-本镜像以 Alpine 3.14 或 Debian 10 为基础，并使用 [Libreswan](https://libreswan.org) (IPsec VPN 软件) 和 [xl2tpd](https://github.com/xelerance/xl2tpd) (L2TP 服务进程)。
+本镜像以 Alpine 3.15 或 Debian 11 为基础，并使用 [Libreswan](https://libreswan.org) (IPsec VPN 软件) 和 [xl2tpd](https://github.com/xelerance/xl2tpd) (L2TP 服务进程)。
 
-[**&raquo; 另见： IPsec VPN 服务器一键安装脚本**](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/README-zh.md)
+[**&raquo; 另见：IPsec VPN 服务器一键安装脚本**](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/README-zh.md)
 
 *其他语言版本: [English](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README.md), [简体中文](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md).*
 
@@ -68,17 +68,17 @@ docker image tag quay.io/hwdsl2/ipsec-vpn-server hwdsl2/ipsec-vpn-server
 
 支持以下架构系统：`linux/amd64`, `linux/arm64` 和 `linux/arm/v7`。
 
-高级用户可以自己从 GitHub [编译源代码](#从源代码构建)。
+高级用户可以自己从 GitHub [编译源代码](docs/advanced-usage-zh.md#从源代码构建)。
 
 ## 镜像对照表
 
-有两个预构建的镜像可用。默认的基于 Alpine 的镜像大小仅 ~16MB。
+有两个预构建的镜像可用。默认的基于 Alpine 的镜像大小仅 ~17MB。
 
 |                 | 基于 Alpine               | 基于 Debian                     |
 | --------------- | ------------------------ | ------------------------------ |
 | 镜像名称          | hwdsl2/ipsec-vpn-server  | hwdsl2/ipsec-vpn-server:debian |
-| 压缩后大小        | ~ 16 MB                  | ~ 57 MB                        |
-| 基础镜像          | Alpine Linux 3.14        | Debian Linux 10                |
+| 压缩后大小        | ~ 17 MB                  | ~ 61 MB                        |
+| 基础镜像          | Alpine Linux 3.15        | Debian Linux 11                |
 | 系统架构          | amd64, arm64, arm/v7     | amd64, arm64, arm/v7           |
 | Libreswan 版本   | 4.5                      | 4.5                            |
 | IPsec/L2TP      | ✅                       | ✅                              |
@@ -93,7 +93,7 @@ docker image tag quay.io/hwdsl2/ipsec-vpn-server hwdsl2/ipsec-vpn-server
 
 **注：** 所有这些变量对于本镜像都是可选的，也就是说无需定义它们就可以搭建 IPsec VPN 服务器。你可以运行 `touch vpn.env` 创建一个空的 `env` 文件，然后跳到下一节。
 
-这个 Docker 镜像使用以下几个变量，可以在一个 `env` 文件中定义（参见[示例](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/vpn.env.example)）：
+这个 Docker 镜像使用以下几个变量，可以在一个 `env` 文件中定义（参见[示例](vpn.env.example)）：
 
 ```
 VPN_IPSEC_PSK=your_ipsec_pre_shared_key
@@ -112,7 +112,7 @@ VPN_ADDL_PASSWORDS=additional_password_1 additional_password_2
 
 **注：** 在你的 `env` 文件中，**不要**为变量值添加 `""` 或者 `''`，或在 `=` 两边添加空格。**不要**在值中使用这些字符： `\ " '`。一个安全的 IPsec PSK 应该至少包含 20 个随机字符。
 
-高级用户可以指定一个域名作为 VPN 服务器的地址。这是可选的。该域名必须是一个全称域名 (FQDN)。它将包含在 IKEv2 模式的服务器证书中，这是 VPN 客户端连接所必需的。示例如下：
+高级用户可以指定一个域名作为 VPN 服务器的地址。这是可选的。该域名必须是一个全称域名 (FQDN)。它将被包含在 IKEv2 模式的服务器证书中。示例如下：
 
 ```
 VPN_DNS_NAME=vpn.example.com
@@ -146,7 +146,7 @@ docker run \
 
 推荐在使用本镜像时启用 IKEv2。如果你不想启用 IKEv2 而仅使用 IPsec/L2TP 和 IPsec/XAuth ("Cisco IPsec") 模式连接到 VPN，可以去掉上面 `docker run` 命令中的 `-v` 选项。
 
-**注：** 高级用户也可以 [不启用 privileged 模式运行](#不启用-privileged-模式运行)。
+**注：** 高级用户也可以 [不启用 privileged 模式运行](docs/advanced-usage-zh.md#不启用-privileged-模式运行)。
 
 ### 获取 VPN 登录信息
 
@@ -193,17 +193,15 @@ docker cp ipsec-vpn-server:/etc/ipsec.d/vpn-gen.env ./
 
 *其他语言版本: [English](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README.md#important-notes), [简体中文](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md#重要提示).*
 
-**Windows 用户** 在首次连接之前需要 [修改注册表](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-zh.md#windows-错误-809)，以解决 VPN 服务器或客户端与 NAT（比如家用路由器）的兼容问题。
+**Windows 用户** 对于 IPsec/L2TP 模式，在首次连接之前需要 [修改注册表](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-zh.md#windows-错误-809)，以解决 VPN 服务器或客户端与 NAT（比如家用路由器）的兼容问题。
 
-**Android 用户** 如果遇到连接问题，请尝试 [这些步骤](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-zh.md#android-mtumss-问题)。
+同一个 VPN 账户可以在你的多个设备上使用。但是由于 IPsec/L2TP 的局限性，如果需要同时连接在同一个 NAT（比如家用路由器）后面的多个设备到 VPN 服务器，你必须使用 [IKEv2](#配置并使用-ikev2-vpn) 或者 [IPsec/XAuth](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md) 模式。
 
-同一个 VPN 账户可以在你的多个设备上使用。但是由于 IPsec/L2TP 的局限性，如果需要同时连接在同一个 NAT（比如家用路由器）后面的多个设备到 VPN 服务器，你必须仅使用 [IKEv2](#配置并使用-ikev2-vpn) 或者 [IPsec/XAuth](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth-zh.md) 模式。
-
-如需添加，修改或者删除 VPN 用户账户，首先更新你的 `env` 文件，然后你必须按照 [下一节](#更新-docker-镜像) 的说明来删除并重新创建 Docker 容器。高级用户可以 [绑定挂载](#绑定挂载-env-文件) `env` 文件。
+如需添加，修改或者删除 VPN 用户账户，首先更新你的 `env` 文件，然后你必须按照 [下一节](#更新-docker-镜像) 的说明来删除并重新创建 Docker 容器。高级用户可以 [绑定挂载](docs/advanced-usage-zh.md#绑定挂载-env-文件) `env` 文件。
 
 对于有外部防火墙的服务器（比如 [EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html)/[GCE](https://cloud.google.com/vpc/docs/firewalls)），请为 VPN 打开 UDP 端口 500 和 4500。阿里云用户请参见 [#433](https://github.com/hwdsl2/setup-ipsec-vpn/issues/433)。
 
-在 VPN 已连接时，客户端配置为使用 [Google Public DNS](https://developers.google.com/speed/public-dns/)。如果偏好其它的域名解析服务，请看 [这里](#使用其他的-dns-服务器)。
+在 VPN 已连接时，客户端配置为使用 [Google Public DNS](https://developers.google.com/speed/public-dns/)。如果偏好其它的域名解析服务，请看 [这里](docs/advanced-usage-zh.md#使用其他的-dns-服务器)。
 
 ## 更新 Docker 镜像
 
@@ -246,7 +244,7 @@ docker cp ipsec-vpn-server:/etc/ipsec.d/vpnclient.p12 ./
 
 然后你可以使用上面获取的 IKEv2 配置信息来 [配置 IKEv2 VPN 客户端](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/ikev2-howto-zh.md#配置-ikev2-vpn-客户端)。
 
-要管理 IKEv2 客户端，你可以使用 [辅助脚本](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/ikev2-howto-zh.md#使用辅助脚本)。示例如下。如需自定义客户端选项，可以在不添加参数的情况下运行脚本。
+要管理 IKEv2 客户端，你可以使用 [辅助脚本](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/ikev2-howto-zh.md#使用辅助脚本配置-ikev2)。示例如下。如需自定义客户端选项，可以在不添加参数的情况下运行脚本。
 
 ```bash
 # 添加一个客户端（使用默认选项）
@@ -261,215 +259,32 @@ docker exec -it ipsec-vpn-server ikev2.sh -h
 
 **注：** 如果你遇到错误 "executable file not found"，将上面的 `ikev2.sh` 换成 `/opt/src/ikev2.sh`。
 
+在某些情况下，高级用户可能需要移除 IKEv2 并使用自定义选项重新配置它。这可以使用辅助脚本来完成。请注意，这将覆盖你在 `env` 文件中指定的变量，例如 `VPN_DNS_NAME` 和 `VPN_CLIENT_NAME`，并且 Docker 容器的日志将不再显示 IKEv2 的最新信息。
+
+**警告：** 这将**永久删除**所有的 IKEv2 配置（包括证书和密钥），并且**不可撤销**！
+
+```bash
+# 移除 IKEv2 并删除所有的 IKEv2 配置
+docker exec -it ipsec-vpn-server ikev2.sh --removeikev2
+# 使用自定义选项重新配置 IKEv2
+docker exec -it ipsec-vpn-server ikev2.sh
+```
+
 ## 高级用法
 
-*其他语言版本: [English](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README.md#advanced-usage), [简体中文](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md#高级用法).*
+请参见 [高级用法](docs/advanced-usage-zh.md)。
 
-- [使用其他的 DNS 服务器](#使用其他的-dns-服务器)
-- [不启用 privileged 模式运行](#不启用-privileged-模式运行)
-- [选择 VPN 模式](#选择-vpn-模式)
-- [访问 Docker 主机上的其它容器](#访问-docker-主机上的其它容器)
-- [关于 host network 模式](#关于-host-network-模式)
-- [启用 Libreswan 日志](#启用-libreswan-日志)
-- [查看服务器状态](#查看服务器状态)
-- [从源代码构建](#从源代码构建)
-- [在容器中运行 Bash shell](#在容器中运行-bash-shell)
-- [绑定挂载 env 文件](#绑定挂载-env-文件)
-
-### 使用其他的 DNS 服务器
-
-在 VPN 已连接时，客户端配置为使用 [Google Public DNS](https://developers.google.com/speed/public-dns/)。如果偏好其它的域名解析服务，你可以在 `env` 文件中定义 `VPN_DNS_SRV1` 和 `VPN_DNS_SRV2`（可选），然后按照上面的说明重新创建 Docker 容器。比如你想使用 [Cloudflare 的 DNS 服务](https://1.1.1.1)：
-
-```
-VPN_DNS_SRV1=1.1.1.1
-VPN_DNS_SRV2=1.0.0.1
-```
-
-### 不启用 privileged 模式运行
-
-高级用户可以在不启用 [privileged 模式](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) 的情况下使用本镜像创建一个 Docker 容器 （将 `./vpn.env` 替换为你自己的 `env` 文件）：
-
-```
-docker run \
-    --name ipsec-vpn-server \
-    --env-file ./vpn.env \
-    --restart=always \
-    -v ikev2-vpn-data:/etc/ipsec.d \
-    -p 500:500/udp \
-    -p 4500:4500/udp \
-    -d --cap-add=NET_ADMIN \
-    --device=/dev/ppp \
-    --sysctl net.ipv4.ip_forward=1 \
-    --sysctl net.ipv4.conf.all.accept_redirects=0 \
-    --sysctl net.ipv4.conf.all.send_redirects=0 \
-    --sysctl net.ipv4.conf.all.rp_filter=0 \
-    --sysctl net.ipv4.conf.default.accept_redirects=0 \
-    --sysctl net.ipv4.conf.default.send_redirects=0 \
-    --sysctl net.ipv4.conf.default.rp_filter=0 \
-    --sysctl net.ipv4.conf.eth0.send_redirects=0 \
-    --sysctl net.ipv4.conf.eth0.rp_filter=0 \
-    hwdsl2/ipsec-vpn-server
-```
-
-在不启用 privileged 模式运行时，容器不能更改 `sysctl` 设置。这可能会影响本镜像的某些功能。一个已知问题是 [Android MTU/MSS fix](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-zh.md#android-mtumss-问题) 需要另外在 `docker run` 命令添加 `--sysctl net.ipv4.ip_no_pmtu_disc=1` 才有效。如果你遇到任何问题，可以尝试换用 [privileged 模式](#运行-ipsec-vpn-服务器) 重新创建容器。
-
-在创建 Docker 容器之后，请转到 [获取 VPN 登录信息](#获取-vpn-登录信息)。
-
-类似地，如果你使用 [Docker compose](https://docs.docker.com/compose/)，可以将 [docker-compose.yml](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/docker-compose.yml) 中的 `privileged: true` 替换为：
-
-```
-  cap_add:
-    - NET_ADMIN
-  devices:
-    - "/dev/ppp:/dev/ppp"
-  sysctls:
-    - net.ipv4.ip_forward=1
-    - net.ipv4.conf.all.accept_redirects=0
-    - net.ipv4.conf.all.send_redirects=0
-    - net.ipv4.conf.all.rp_filter=0
-    - net.ipv4.conf.default.accept_redirects=0
-    - net.ipv4.conf.default.send_redirects=0
-    - net.ipv4.conf.default.rp_filter=0
-    - net.ipv4.conf.eth0.send_redirects=0
-    - net.ipv4.conf.eth0.rp_filter=0
-```
-
-更多信息请参见 [compose file reference](https://docs.docker.com/compose/compose-file/)。
-
-### 选择 VPN 模式
-
-在使用此 Docker 镜像时，默认启用 IPsec/L2TP 和 IPsec/XAuth ("Cisco IPsec") 模式。此外，如果在创建 Docker 容器时在 `docker run` 命令中[指定](#运行-ipsec-vpn-服务器)了 `-v ikev2-vpn-data:/etc/ipsec.d` 选项，则会启用 IKEv2 模式。
-
-高级用户可以有选择性地禁用 VPN 模式，通过在 `env` 文件中设置以下变量并重新创建 Docker 容器来实现。
-
-禁用 IPsec/L2TP 模式：`VPN_DISABLE_IPSEC_L2TP=yes`   
-禁用 IPsec/XAuth ("Cisco IPsec") 模式：`VPN_DISABLE_IPSEC_XAUTH=yes`   
-禁用 IPsec/L2TP 和 IPsec/XAuth 模式：`VPN_IKEV2_ONLY=yes`
-
-### 访问 Docker 主机上的其它容器
-
-连接到 VPN 后，VPN 客户端通常可以访问在同一 Docker 主机上其他容器中运行的服务，而无需进行其他配置。
-
-例如，如果 IPsec VPN 服务器容器的 IP 为 `172.17.0.2`，并且一个 IP 为 `172.17.0.3` 的 Nginx 容器在同一 Docker 主机上运行，则 VPN 客户端可以使用 IP `172.17.0.3` 来访问 Nginx 容器上的服务。要找出分配给容器的 IP ，可以运行 `docker inspect <container name>`。
-
-### 关于 host network 模式
-
-高级用户可以使用 [host network 模式](https://docs.docker.com/network/host/) 运行本镜像，通过为 `docker run` 命令添加 `--network=host` 参数来实现。另外，如果 [不启用 privileged 模式运行](#不启用-privileged-模式运行)，你可能还需要将 `eth0` 替换为你的 Docker 主机的网络接口名称。
-
-在非必要的情况下，**不推荐**使用 host network 模式运行本镜像。在该模式下，容器的网络栈未与 Docker 主机隔离，从而在使用 IPsec/L2TP 模式连接之后，VPN 客户端可以使用 Docker 主机的 VPN 内网 IP `192.168.42.1` 访问主机上的端口或服务。请注意，当你不再使用本镜像时，你需要手动清理 [run.sh](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/run.sh) 所更改的 IPTables 规则和 sysctl 设置，或者重启服务器。
-
-某些 Docker 主机操作系统，比如 Debian 10，不能使用 host network 模式运行本镜像，因为它们使用 nftables。
-
-### 启用 Libreswan 日志
-
-为了保持较小的 Docker 镜像，Libreswan (IPsec) 日志默认未开启。如果你需要启用它以进行故障排除，首先在正在运行的 Docker 容器中开始一个 Bash 会话：
-
-```
-docker exec -it ipsec-vpn-server env TERM=xterm bash -l
-```
-
-然后运行以下命令：
-
-```
-# For Alpine-based image
-apk add --no-cache rsyslog
-rsyslogd
-ipsec whack --shutdown
-ipsec pluto --config /etc/ipsec.conf
-sed -i '/pluto\.pid/a rsyslogd' /opt/src/run.sh
-exit
-# For Debian-based image
-apt-get update && apt-get -y install rsyslog
-service rsyslog restart
-service ipsec restart
-sed -i '/pluto\.pid/a service rsyslog restart' /opt/src/run.sh
-exit
-```
-
-完成后你可以这样查看 Libreswan 日志：
-
-```
-docker exec -it ipsec-vpn-server grep pluto /var/log/auth.log
-```
-
-如需查看 xl2tpd 日志，请运行 `docker logs ipsec-vpn-server`。
-
-### 查看服务器状态
-
-检查 IPsec VPN 服务器状态：
-
-```
-docker exec -it ipsec-vpn-server ipsec status
-```
-
-查看当前已建立的 VPN 连接：
-
-```
-docker exec -it ipsec-vpn-server ipsec trafficstatus
-```
-
-### 从源代码构建
-
-高级用户可以从 GitHub 下载并自行编译源代码：
-
-```
-git clone https://github.com/hwdsl2/docker-ipsec-vpn-server.git
-cd docker-ipsec-vpn-server
-# To build Alpine-based image
-docker build -t hwdsl2/ipsec-vpn-server .
-# To build Debian-based image
-docker build -f Dockerfile.debian -t hwdsl2/ipsec-vpn-server:debian .
-```
-
-若不需要改动源码，也可以这样：
-
-```
-# To build Alpine-based image
-docker build -t hwdsl2/ipsec-vpn-server github.com/hwdsl2/docker-ipsec-vpn-server.git
-# To build Debian-based image
-docker build -f Dockerfile.debian -t hwdsl2/ipsec-vpn-server:debian \
-  github.com/hwdsl2/docker-ipsec-vpn-server.git
-```
-
-### 在容器中运行 Bash shell
-
-在正在运行的 Docker 容器中开始一个 Bash 会话：
-
-```
-docker exec -it ipsec-vpn-server env TERM=xterm bash -l
-```
-
-（可选步骤） 安装 `nano` 编辑器：
-
-```
-# For Alpine-based image
-apk add --no-cache nano
-# For Debian-based image
-apt-get update && apt-get -y install nano
-```
-
-然后在容器中运行你的命令。完成后退出并重启 Docker 容器 （如果需要）：
-
-```
-exit
-docker restart ipsec-vpn-server
-```
-
-### 绑定挂载 env 文件
-
-作为 `--env-file` 选项的替代方案，高级用户可以绑定挂载 `env` 文件。该方法的好处是你在更新 `env` 文件之后可以重启 Docker 容器以生效，而不需要重新创建它。要使用这个方法，你必须首先编辑你的 `env` 文件并将所有的变量值用单引号 `''` 括起来。然后（重新）创建 Docker 容器（将第一个 `vpn.env` 替换为你自己的 `env` 文件）：
-
-```
-docker run \
-    --name ipsec-vpn-server \
-    --restart=always \
-    -v ikev2-vpn-data:/etc/ipsec.d \
-    -v "$(pwd)/vpn.env:/opt/src/vpn.env:ro" \
-    -p 500:500/udp \
-    -p 4500:4500/udp \
-    -d --privileged \
-    hwdsl2/ipsec-vpn-server
-```
+- [使用其他的 DNS 服务器](docs/advanced-usage-zh.md#使用其他的-dns-服务器)
+- [不启用 privileged 模式运行](docs/advanced-usage-zh.md#不启用-privileged-模式运行)
+- [选择 VPN 模式](docs/advanced-usage-zh.md#选择-vpn-模式)
+- [访问 Docker 主机上的其它容器](docs/advanced-usage-zh.md#访问-docker-主机上的其它容器)
+- [指定 VPN 服务器的公有 IP](docs/advanced-usage-zh.md#指定-vpn-服务器的公有-ip)
+- [关于 host network 模式](docs/advanced-usage-zh.md#关于-host-network-模式)
+- [启用 Libreswan 日志](docs/advanced-usage-zh.md#启用-libreswan-日志)
+- [查看服务器状态](docs/advanced-usage-zh.md#查看服务器状态)
+- [从源代码构建](docs/advanced-usage-zh.md#从源代码构建)
+- [在容器中运行 Bash shell](docs/advanced-usage-zh.md#在容器中运行-bash-shell)
+- [绑定挂载 env 文件](docs/advanced-usage-zh.md#绑定挂载-env-文件)
 
 ## 技术细节
 
@@ -493,7 +308,7 @@ docker run \
 
 **注：** 预构建镜像中的软件组件（例如 Libreswan 和 xl2tpd）在其各自版权所有者选择的相应许可下。对于任何预构建的镜像的使用，用户有责任确保对该镜像的任何使用符合其中包含的所有软件的任何相关许可。
 
-版权所有 (C) 2016-2021 [Lin Song](https://github.com/hwdsl2) [![View my profile on LinkedIn](https://static.licdn.com/scds/common/u/img/webpromo/btn_viewmy_160x25.png)](https://www.linkedin.com/in/linsongui)   
+版权所有 (C) 2016-2022 [Lin Song](https://github.com/hwdsl2) [![View my profile on LinkedIn](https://static.licdn.com/scds/common/u/img/webpromo/btn_viewmy_160x25.png)](https://www.linkedin.com/in/linsongui)   
 基于 [Thomas Sarlandie 的工作](https://github.com/sarfata/voodooprivacy) (版权所有 2012)
 
 [![Creative Commons License](https://i.creativecommons.org/l/by-sa/3.0/88x31.png)](http://creativecommons.org/licenses/by-sa/3.0/)   
