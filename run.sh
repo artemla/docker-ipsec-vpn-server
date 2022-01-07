@@ -493,8 +493,8 @@ if ! iptables -t nat -C POSTROUTING -s "$L2TP_NET" -o "$NET_IFACE" -j MASQUERADE
   $ipi 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
   $ipi 6 -p udp --dport 1701 -j DROP
   $ipf 1 -m conntrack --ctstate INVALID -j DROP
-  $ipf 2 -i "$NET_IFACE" -o ppp+ -m conntrack --ctstate "$res" -j ACCEPT
-  $ipf 3 -i ppp+ -o "$NET_IFACE" -j ACCEPT
+  $ipf 2 -i "$NET_IFACE" -o ppp+ -m conntrack --ctstate "$res" -j DROP
+  $ipf 3 -i ppp+ -o "$NET_IFACE" -j DROP
   $ipf 4 -i ppp+ -o ppp+ -j ACCEPT
   $ipf 5 -i "$NET_IFACE" -d "$XAUTH_NET" -m conntrack --ctstate "$res" -j ACCEPT
   $ipf 6 -s "$XAUTH_NET" -o "$NET_IFACE" -j ACCEPT
